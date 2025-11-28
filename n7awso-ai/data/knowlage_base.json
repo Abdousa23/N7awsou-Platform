@@ -1,0 +1,76 @@
+{
+  "Bejaia": [
+    {
+      "name": "Sirius Star Travel",
+      "address": "Cité 112 logts, Seghir district, Béjaïa",
+      "phone": ["+213 34 12 60 21", "0555 54 91 36"],
+      "email": "siriustrav@gmail.com",
+      "activities": ["travel organization", "tourism services"],
+      "notes": "General tourism & transit services in Bejaïa" 
+    },
+    {
+      "name": "Nouzha Travel",
+      "address": "Cité Bourai, rue de la Liberté, Béjaïa",
+      "phone": ["034 10 93 07", "0698 95 11 17", "0698 95 11 37"],
+      "email": "nouzhadz@gmail.com",
+      "activities": ["travel organization", "tourism services"],
+      "notes": "Local travel agency offering tourism and transit services"
+    }
+  ],
+  "Jijel": [
+    {
+      "name": "Touring Voyages",
+      "address": "1 Blvd Mustapha Ben Boulaid, Jijel",
+      "phone": ["+213 34 49 87 98"],
+      "fax": "+213 34 47 10 38",
+      "activities": ["travel & tourism"],
+      "notes": "Organized tours, travel packages" 
+    },
+    {
+      "name": "Sarl Agence de Tourisme et de Voyage La Corniche",
+      "address": "N° 28 rue du 1er novembre, Jijel",
+      "activities": ["travel & tourism", "vehicle rental with guide", "organized trips"],
+      "notes": "Since 2000; offers full tourism services including guided vehicle rental" 
+    },
+    {
+      "name": "Corniche Voyages",
+      "address": "31 avenue du 1er novembre, Jijel",
+      "phone": ["+213 34 47 85 04", "+213 34 47 11 44"],
+      "activities": ["travel & tourism"],
+      "notes": "Tour packages likely including Jijel coastline" 
+    },
+    {
+      "name": "Direction de Tourisme Jijel",
+      "address": "Entrée Est de la wilaya de Jijel (3 km Jijel)",
+      "phone": ["034 59 64 23"],
+      "email": "dta.jijel@mta.gov.dz",
+      "activities": ["regional tourism office"],
+      "notes": "Coordinates local tours and promotes sites like Parc national de Taza & Corniche" 
+    }
+  ],
+  "Algiers": [
+    {
+      "name": "STA / Savoyage Tours Agency",
+      "address": "24 rue Daib Aissa, Bordj El Kiffan, Algiers",
+      "phone": ["0778 38 18 55", "0561 61 69 09"],
+      "email": "savoyagetoursagency@gmail.com",
+      "activities": ["travel & tourism", "bus rental", "tailor-made stays", "pilgrimages (Omra)", "ticketing", "insurance"],
+      "notes": "Full-service tour agency in Algiers" 
+    },
+    {
+      "name": "Direction of Tourism and Handicrafts Algiers",
+      "address": "4 rue Amara Rachid, Casbah, Algiers",
+      "phone": ["+213 21 43 75 42"],
+      "email": "dta.alger@mta.gov.dz",
+      "activities": ["regional tourism office"],
+      "notes": "Promotes historic Algiers circuits, guides, lodging info" 
+    },
+    {
+      "name": "Algérie Tourisme Investissements",
+      "address": "30 rue Hassene Benaâmane, Bir Mourad Rais, Algiers",
+      "phone": ["+213 21 54 13 13"],
+      "activities": ["tourism & accommodation", "investment promotion"],
+      "notes": "Supports tourism development and investments" 
+    }
+  ]
+}

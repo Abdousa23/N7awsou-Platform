@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client-py"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int                 @id @default(autoincrement())
+  username           String              @unique
+  email              String              @unique
+  createdAt          DateTime            @default(now())
+  hash               String
+  hashedRt           String?
+  role               Role
+  History            History[]
+  GuideTours         GuideTours[]        @relation("GuideTours")
+  TouristTours       TouristTours[]
+  Payments           Payment[]
+  Reviews            Rating[]
+  // Email marketing fields
+  emailSubscribed    Boolean             @default(true)
+  emailVerified      Boolean             @default(false)
+  unsubscribedAt     DateTime?
+  lastEmailSent      DateTime?
+  EmailCampaignSends EmailCampaignSend[]
+  UserPreferences    UserPreferences?
+
+  @@map("users")
+}
+
+model History {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  tourId      Int
+  viewedAt    DateTime?
+  interaction Int       @default(0)
+  enrolled    Boolean   @default(false)
+  enrolledAt  DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+  tour        Tour      @relation(fields: [tourId], references: [id])
+
+  @@map("histories")
+}
+
+model GuideTours {
+  id        Int      @id @default(autoincrement())
+  guideId   Int
+  tourId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  guide     User     @relation("GuideTours", fields: [guideId], references: [id])
+  tour      Tour     @relation("TourGuides", fields: [tourId], references: [id])
+
+  @@map("guide_tours")
+}
+
+model Tour {
+  id                  Int            @id @default(autoincrement())
+  name                String
+  description         String
+  price               Float
+  departureDate       DateTime
+  returnDate          DateTime
+  departureLocation   String
+  destinationLocation String
+  includedFeatures    String[]
+  category            String?
+  tripType            TripType
+  images              String[]
+  dressCode           String?
+  available           Boolean        @default(true)
+  duration            Int
+  availableCapacity   Int            @default(70)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  History             History[]
+  sellerId            Int?
+  seller              Seller?        @relation(fields: [sellerId], references: [id], onDelete: SetNull)
+  GuideTours          GuideTours[]   @relation("TourGuides")
+  TouristTours        TouristTours[]
+  Payments            Payment[]
+  Ratings             Rating[]
+  AIContent           AIContent?
+
+  @@map("tours")
+}
+
+// Junction table for Tourist-Tour many-to-many relationship
+model TouristTours {
+  id        Int               @id @default(autoincrement())
+  touristId Int
+  tourId    Int
+  status    TouristTourStatus @default(INTERESTED)
+  tourist   User              @relation(fields: [touristId], references: [id], onDelete: Cascade)
+  tour      Tour              @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([touristId, tourId])
+  @@map("tourist_tours")
+}
+
+model Payment {
+  id              Int           @id @default(autoincrement())
+  userId          Int
+  tourId          Int // Direct reference to tour for payment
+  amount          Float
+  numberOfPeople  Int           @default(1) // Store booking details in payment
+  currency        String        @default("DZD")
+  status          PaymentStatus @default(PROCESSING)
+  transactionId   String?       @unique
+  gatewayResponse Json?
+  createdAt       DateTime      @default(now())
+  processedAt     DateTime?
+  failedAt        DateTime?
+  refundedAt      DateTime?
+  refundAmount    Float?
+  notes           String? // Optional booking notes
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tour            Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model StaffMember {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  Seller   Seller?
+}
+
+model Seller {
+  id            Int         @id @default(autoincrement())
+  StaffMemberId Int         @unique
+  StaffMember   StaffMember @relation(fields: [StaffMemberId], references: [id], onDelete: Cascade)
+  tours         Tour[]
+}
+
+model Rating {
+  id     Int     @id @default(autoincrement())
+  rating Int
+  review String?
+  userId Int
+  user   User    @relation(fields: [userId], references: [id])
+  tourId Int
+  tour   Tour    @relation(fields: [tourId], references: [id])
+}
+
+model ChatSession {
+  id           String   @id @default(cuid())
+  sessionId    String   @unique @map("session_id")
+  userId       String?  @map("user_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  lastActivity DateTime @default(now()) @map("last_activity")
+  isActive     Boolean  @default(true) @map("is_active")
+
+  // Relation to chat messages
+  messages ChatMessage[]
+
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  sessionId String   @map("session_id")
+  messageId String   @unique @map("message_id")
+  role      String // "user" or "assistant"
+  content   String
+  timestamp DateTime @default(now())
+
+  // Relation to chat session
+  session ChatSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@index([sessionId, timestamp])
+  @@map("chat_messages")
+}
+
+// USER PREFERENCES FOR AI PERSONALIZATION
+model UserPreferences {
+  id                    Int      @id @default(autoincrement())
+  userId                Int      @unique
+  budgetRange           String?
+  preferredTripTypes    String[]
+  preferredCategories   String[]
+  preferredDestinations String[]
+  travelStyle           String?
+  groupSize             String?
+  preferredDuration     String?
+  accessibility         String[]
+  dietaryRestrictions   String[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+// AI CONTENT GENERATION
+model AIContent {
+  id               Int      @id @default(autoincrement())
+  tourId           Int      @unique
+  personalizedDesc String?
+  highlights       String[]
+  recommendations  String[]
+  targetAudience   String[]
+  suggestedTags    String[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  tour             Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("ai_content")
+}
+
+// EMAIL MARKETING MODELS
+model EmailCampaign {
+  id             Int                 @id @default(autoincrement())
+  name           String
+  subject        String
+  content        String              @db.Text
+  htmlContent    String?             @db.Text
+  status         EmailCampaignStatus @default(DRAFT)
+  targetAudience Json? // Criteria for targeting users
+  scheduledAt    DateTime?
+  sentAt         DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  // Campaign statistics
+  totalRecipients   Int @default(0)
+  sentCount         Int @default(0)
+  deliveredCount    Int @default(0)
+  openedCount       Int @default(0)
+  clickedCount      Int @default(0)
+  unsubscribedCount Int @default(0)
+
+  // Relations
+  sends EmailCampaignSend[]
+
+  @@map("email_campaigns")
+}
+
+model EmailCampaignSend {
+  id             Int             @id @default(autoincrement())
+  campaignId     Int
+  userId         Int
+  status         EmailSendStatus @default(PENDING)
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  openedAt       DateTime?
+  clickedAt      DateTime?
+  unsubscribedAt DateTime?
+  bounceReason   String?
+  errorMessage   String?
+  createdAt      DateTime        @default(now())
+
+  // Relations
+  campaign EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, userId])
+  @@map("email_campaign_sends")
+}
+
+model EmailTemplate {
+  id          Int               @id @default(autoincrement())
+  name        String
+  subject     String
+  content     String            @db.Text
+  htmlContent String?           @db.Text
+  type        EmailTemplateType
+  variables   String[] // Available variables for template
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("email_templates")
+}
+
+model AutomationRules {
+  id             Int       @id @default(autoincrement())
+  name           String
+  description    String?
+  triggerType    String // "user_signup", "tour_booking", "tour_viewed", "payment_completed"
+  conditions     Json // Conditions for trigger
+  actions        Json // Actions to perform
+  isActive       Boolean   @default(true)
+  lastExecuted   DateTime?
+  executionCount Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  logs AutomationLogs[]
+
+  @@map("automation_rules")
+}
+
+model AutomationLogs {
+  id         Int      @id @default(autoincrement())
+  ruleId     Int
+  action     String
+  status     String // "success", "failed", "processing"
+  details    Json?
+  error      String?
+  executedAt DateTime @default(now())
+
+  // Relations
+  rule AutomationRules @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@map("automation_logs")
+}
+
+model ContentTemplates {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String // "email", "sms", "push"
+  template  String   @db.Text
+  variables String[]
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("content_templates")
+}
+
+// ENUMS
+enum TouristTourStatus {
+  INTERESTED
+  JOINED
+  LEFT
+}
+
+enum PaymentStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum Role {
+  TOURIST
+  GUIDE
+  ADMIN
+  VENDEUR
+}
+
+enum TripType {
+  STANDARD
+  PREMIUM
+  LUXURY
+}
+
+enum EmailCampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  PAUSED
+  CANCELLED
+}
+
+enum EmailSendStatus {
+  PENDING
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  FAILED
+  UNSUBSCRIBED
+}
+
+enum EmailTemplateType {
+  WELCOME
+  TOUR_RECOMMENDATION
+  BOOKING_CONFIRMATION
+  PAYMENT_REMINDER
+  NEWSLETTER
+  PROMOTIONAL
+  ABANDONED_CART
+}

@@ -1,0 +1,53 @@
+[
+    {
+        "id": 0,
+        "title": "Coastal Escape in Bejaïa",
+        "description": "Discover the stunning Mediterranean coastline of Bejaïa, rich with history, hidden coves, and Kabyle culture.",
+        "destinations": [
+            "Cap Carbon",
+            "Gouraya National Park",
+            "Yemma Gouraya"
+        ],
+        "duration_days": 4,
+        "best_time_to_visit": "April to September",
+        "activities": [
+            "Hiking to Yemma Gouraya",
+            "Boat tours around Cap Carbon",
+            "Local cuisine tasting in the old medina"
+        ]
+    },
+    {
+        "id": 1,
+        "title": "Mountain Adventures in Sétif",
+        "description": "Explore the highlands of Sétif, where Roman ruins meet modern charm and nature provides a breath of fresh air.",
+        "destinations": [
+            "Djemila Roman Ruins",
+            "El Eulma Market",
+            "Babor Mountains"
+        ],
+        "duration_days": 3,
+        "best_time_to_visit": "March to May, September to November",
+        "activities": [
+            "Cultural visits to Djemila",
+            "Mountain hiking in Babor",
+            "Shopping in El Eulma"
+        ]
+    },
+    {
+        "id": 2,
+        "title": "Seaside Serenity in Skikda",
+        "description": "Enjoy the relaxed atmosphere of Skikda, known for its wide beaches, colonial architecture, and vibrant sea life.",
+        "destinations": [
+            "La Marsa Beach",
+            "Old Port of Skikda",
+            "Roman Theater"
+        ],
+        "duration_days": 5,
+        "best_time_to_visit": "June to August",
+        "activities": [
+            "Swimming and beach lounging",
+            "Exploring colonial buildings and the Roman theater",
+            "Seafood tasting at the marina"
+        ]
+    }
+]
